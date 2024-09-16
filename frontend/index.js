@@ -6,29 +6,57 @@ let authClient;
 let agent;
 
 async function initAuth() {
-  authClient = await AuthClient.create();
-  if (await authClient.isAuthenticated()) {
-    handleAuthenticated();
+  try {
+    authClient = await AuthClient.create();
+    if (await authClient.isAuthenticated()) {
+      handleAuthenticated();
+    }
+  } catch (error) {
+    console.error("Error initializing auth:", error);
   }
 }
 
 async function handleAuthenticated() {
-  const identity = await authClient.getIdentity();
-  agent = new HttpAgent({ identity });
-  await loadChatHistory();
+  try {
+    const identity = await authClient.getIdentity();
+    agent = new HttpAgent({ identity });
+    await loadChatHistory();
+  } catch (error) {
+    console.error("Error handling authentication:", error);
+  }
 }
 
-document.getElementById('loginButton').onclick = async () => {
-  authClient.login({
-    identityProvider: "https://identity.ic0.app/#authorize",
-    onSuccess: handleAuthenticated
+function attachEventListeners() {
+  document.getElementById('loginButton').addEventListener('click', async () => {
+    try {
+      await authClient.login({
+        identityProvider: "https://identity.ic0.app/#authorize",
+        onSuccess: handleAuthenticated
+      });
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
   });
-};
 
-document.getElementById('logoutButton').onclick = async () => {
-  await authClient.logout();
-  location.reload();
-};
+  document.getElementById('logoutButton').addEventListener('click', async () => {
+    try {
+      await authClient.logout();
+      location.reload();
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  });
+
+  document.getElementById('sendButton').addEventListener('click', sendMessage);
+  document.getElementById('addFileButton').addEventListener('click', addFile);
+  document.getElementById('editFileButton').addEventListener('click', editFile);
+  document.getElementById('newFileButton').addEventListener('click', createNewFile);
+  document.getElementById('searchButton').addEventListener('click', performSearch);
+  document.getElementById('clearButton').addEventListener('click', clearMemory);
+  document.getElementById('resetButton').addEventListener('click', resetAll);
+  document.getElementById('undoButton').addEventListener('click', undoEdit);
+  document.getElementById('changeModelButton').addEventListener('click', changeModel);
+}
 
 let chatHistory = [];
 
@@ -53,7 +81,7 @@ function displayChatHistory() {
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-document.getElementById('sendButton').onclick = async () => {
+async function sendMessage() {
   const input = document.getElementById('userInput');
   const message = input.value.trim();
   if (message) {
@@ -69,9 +97,9 @@ document.getElementById('sendButton').onclick = async () => {
       console.error("Error sending message:", error);
     }
   }
-};
+}
 
-document.getElementById('addFileButton').onclick = async () => {
+async function addFile() {
   const fileInput = document.getElementById('fileInput');
   const file = fileInput.files[0];
   if (file) {
@@ -87,9 +115,9 @@ document.getElementById('addFileButton').onclick = async () => {
     };
     reader.readAsText(file);
   }
-};
+}
 
-document.getElementById('editFileButton').onclick = async () => {
+async function editFile() {
   const filepath = prompt("Enter the filepath to edit:");
   if (filepath) {
     try {
@@ -108,9 +136,9 @@ document.getElementById('editFileButton').onclick = async () => {
       alert(`Error editing file: ${error.message}`);
     }
   }
-};
+}
 
-document.getElementById('newFileButton').onclick = async () => {
+async function createNewFile() {
   const filepath = prompt("Enter the filepath for the new file:");
   if (filepath) {
     const content = prompt("Enter initial content:");
@@ -124,9 +152,9 @@ document.getElementById('newFileButton').onclick = async () => {
       }
     }
   }
-};
+}
 
-document.getElementById('searchButton').onclick = async () => {
+async function performSearch() {
   const query = prompt("Enter search query:");
   if (query) {
     try {
@@ -143,9 +171,9 @@ document.getElementById('searchButton').onclick = async () => {
       alert(`Error performing search: ${error.message}`);
     }
   }
-};
+}
 
-document.getElementById('clearButton').onclick = async () => {
+async function clearMemory() {
   if (confirm("Are you sure you want to clear all memory?")) {
     try {
       await backend.clearMemory();
@@ -155,9 +183,9 @@ document.getElementById('clearButton').onclick = async () => {
       alert(`Error clearing memory: ${error.message}`);
     }
   }
-};
+}
 
-document.getElementById('resetButton').onclick = async () => {
+async function resetAll() {
   if (confirm("Are you sure you want to reset everything?")) {
     try {
       await backend.resetAll();
@@ -168,9 +196,9 @@ document.getElementById('resetButton').onclick = async () => {
       alert(`Error resetting: ${error.message}`);
     }
   }
-};
+}
 
-document.getElementById('undoButton').onclick = async () => {
+async function undoEdit() {
   const filepath = prompt("Enter the filepath to undo last edit:");
   if (filepath) {
     try {
@@ -185,9 +213,9 @@ document.getElementById('undoButton').onclick = async () => {
       alert(`Error undoing edit: ${error.message}`);
     }
   }
-};
+}
 
-document.getElementById('changeModelButton').onclick = async () => {
+async function changeModel() {
   const newModel = prompt("Enter the new model name:");
   if (newModel) {
     try {
@@ -198,6 +226,9 @@ document.getElementById('changeModelButton').onclick = async () => {
       alert(`Error changing model: ${error.message}`);
     }
   }
-};
+}
 
-window.onload = initAuth;
+document.addEventListener('DOMContentLoaded', () => {
+  initAuth();
+  attachEventListeners();
+});
