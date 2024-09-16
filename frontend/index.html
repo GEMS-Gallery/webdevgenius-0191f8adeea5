@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Developer Console</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #chatContainer {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user {
+            color: blue;
+        }
+        .assistant {
+            color: green;
+        }
+        #userInput {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Developer Console</h1>
+    <div id="authButtons">
+        <button id="loginButton">Login</button>
+        <button id="logoutButton">Logout</button>
+    </div>
+    <div id="chatContainer"></div>
+    <input type="text" id="userInput" placeholder="Type your message...">
+    <button id="sendButton">Send</button>
+    <div>
+        <input type="file" id="fileInput">
+        <button id="addFileButton">Add File</button>
+        <button id="editFileButton">Edit File</button>
+        <button id="newFileButton">New File</button>
+        <button id="searchButton">Search</button>
+        <button id="clearButton">Clear Memory</button>
+        <button id="resetButton">Reset All</button>
+        <button id="undoButton">Undo Edit</button>
+        <button id="changeModelButton">Change Model</button>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>

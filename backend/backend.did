@@ -1,0 +1,47 @@
+type SearchResult = 
+ record {
+   body: text;
+   title: text;
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: FileContent;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
+type ImageData = 
+ variant {
+   base64: text;
+   url: text;
+ };
+type FileContent = 
+ record {
+   content: text;
+   lastModified: int;
+ };
+type ChatMessage = 
+ record {
+   content: text;
+   role: text;
+ };
+service : {
+  addFile: (text, text) -> (Result);
+  addMessage: (text, text) -> ();
+  changeModel: (text) -> ();
+  clearMemory: () -> ();
+  createNewFile: (text, text) -> (Result);
+  editFile: (text, text) -> (Result);
+  getChatHistory: () -> (vec ChatMessage) query;
+  getCurrentModel: () -> (text) query;
+  getFileContent: (text) -> (Result_1) query;
+  getStoredImage: (text) -> (opt ImageData) query;
+  getStoredSearch: (text) -> (opt vec SearchResult) query;
+  resetAll: () -> ();
+  storeImage: (text, ImageData) -> ();
+  storeSearch: (text, vec SearchResult) -> ();
+  undoEdit: (text) -> (Result);
+}
